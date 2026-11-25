@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calendario de Adviento (prueba)</title>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fdeedd;--ink:#4f6428;--red:#a8183c;--green:#5b6f2a;--yellow:#fbe69a;--pink:#f9c4c4;--card:#fff9f0;--txt:#4a3b2a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a2320;--ink:#b9d07a;--card:#3a302b;--txt:#f3e6d3}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 12px;font-family:'Montserrat','Segoe UI',sans-serif;color:var(--txt)}
+h1{font-family:'Bebas Neue',Impact,sans-serif;font-weight:400;letter-spacing:2px;color:var(--ink);font-size:clamp(1.8rem,7vw,2.6rem);margin-bottom:16px;text-align:center}
+.cal{width:100%;max-width:460px;aspect-ratio:328/427;display:grid;grid-template-columns:68fr 17fr 70fr 16fr 71fr 16fr 70fr;grid-template-rows:repeat(61,1fr);background:var(--bg)}
+.d{position:relative;border:2px solid var(--bg);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:filter .2s,transform .2s;font:inherit}
+.d:hover{filter:brightness(1.05);z-index:2}
+.d .n{position:absolute;top:2%;font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(1.6rem,8vw,2.6rem);line-height:1}
+.d.l .n{left:8%}.d.r .n{right:8%}
+.d .e{font-size:clamp(1.4rem,7vw,2.4rem);margin-top:22%}
+.d.open .e{filter:grayscale(.2);opacity:.55}
+.d.open::after{content:"✓";position:absolute;bottom:4%;right:8%;font-weight:800;opacity:.7}
+.red{background:var(--red);color:#fff}.green{background:var(--green);color:#fff}
+.yellow{background:var(--yellow);color:var(--red)}.pink{background:var(--pink);color:var(--red)}
+.bar{margin-top:16px;width:100%;max-width:460px;min-height:56px;padding:10px 14px;text-align:center;font-weight:600;background:var(--card);border:1px dashed var(--ink);border-radius:10px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;line-height:1.35}
+.bar a{color:var(--ink);font-size:.8rem;margin:0 6px}
+.bar small{font-weight:600;opacity:.75}
+button.reset{margin-top:14px;background:var(--ink);color:#fff;border:0;border-radius:30px;padding:10px 26px;font:800 .8rem 'Montserrat',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.reset{color:#2a2320}}
+.sub{max-width:460px;text-align:center;font-size:.85rem;margin:-6px 0 16px;opacity:.85;line-height:1.4}
+.d.lock .e{filter:grayscale(1);opacity:.45}
+.d.lock::after{content:"🔒";position:absolute;bottom:4%;right:8%;font-size:.9rem}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.mc{background:var(--card);color:var(--txt);max-width:380px;width:100%;border-radius:18px;padding:24px 20px;text-align:center;border:3px solid var(--red);animation:pop .35s ease-out;max-height:90vh;overflow:auto}
+.mc .big{font-size:3.2rem;line-height:1}.mc h2{font-family:'Bebas Neue',Impact,sans-serif;font-weight:400;font-size:2rem;letter-spacing:2px;color:var(--red);margin:4px 0 10px}
+.mc p{margin:9px 0;font-size:.92rem;line-height:1.4}.mc .fr{font-weight:800;font-size:1.02rem}.mc .fin{background:var(--yellow);color:var(--red);border-radius:12px;padding:12px;font-weight:800}
+.mc a{color:var(--red);font-weight:800;margin-left:4px}.mc button{margin-top:10px;background:var(--red);color:#fff;border:0;border-radius:30px;padding:9px 24px;font:800 .8rem 'Montserrat',sans-serif;cursor:pointer}
+.cf{position:fixed;top:-30px;z-index:60;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.d.hoy{box-shadow:inset 0 0 0 4px #fff;animation:pul 1.4s infinite}
+@keyframes pul{50%{filter:brightness(1.25)}}
+.cf.sn{animation-iteration-count:infinite;z-index:1}
+.d25{margin-top:12px;width:100%;max-width:460px;border:0;border-radius:14px;padding:14px;font:800 .95rem 'Montserrat',sans-serif;background:var(--red);color:#fff;cursor:pointer;letter-spacing:.5px}
+.d25[hidden]{display:none}
+.d25.lock{background:#8a7a72;opacity:.85}.d25.pulse{animation:pul 1.4s infinite}
+.mc .btn{display:block;width:100%;margin:8px 0}.mc ol{text-align:left;font-size:.8rem;margin:8px 0 8px 22px;max-height:150px;overflow:auto}
+</style>
+</head>
+<body>
+<h1>Calendario de Adviento</h1>
+<p class="sub" id="sub"></p>
+<p class="sub" id="cnt"></p>
+<div class="cal" id="cal"></div>
+<button class="d25" id="d25" type="button"></button>
+<div class="bar" id="bar">👆 Toca un día para descubrir la sorpresa</div>
+<button class="reset" id="reset">Reiniciar</button>
+<script>
+// [color, columnas, filas, lado del número, emoji, sorpresa]
+const D=[
+["yellow","1/2","1/11","r","☕","Un chocolate caliente con malvaviscos"],
+["green","2/4","1/7","r","🧥","Hoy toca suéter navideño feo"],
+["yellow","4/6","1/11","r","🦌","Los renos ya están calentando motores"],
+["red","6/8","1/7","r","🚙","Vamos a por el árbol"],
+["green","1/2","11/21","r","🦌","Adivina la canción: «Rodolfo el reno»"],
+["pink","2/4","7/18","l","⛄","Haz un muñeco de nieve (o dibújalo)"],
+["green","4/6","11/19","l","🧤","Abrígate: guantes y bufanda"],
+["pink","6/8","7/19","l","💂","El cascanueces vigila tus galletas"],
+["pink","1/2","21/31","r","🍭","Un bastón de caramelo para ti"],
+["red","2/4","18/31","r","🎅","Santa ya ha empezado la lista"],
+["yellow","4/6","19/31","r","⛸️","Plan: ir a patinar sobre hielo"],
+["green","6/8","19/31","r","🏡","Construye una casita de jengibre"],
+["yellow","1/3","31/38","l","🧁","Un cupcake navideño"],
+["green","3/5","31/44","r","🎁","Envuelve un regalo con cariño"],
+["red","5/7","31/38","l","🎄","Decora el árbol con música"],
+["pink","7/8","31/38","r","🔴","Cuelga una bola nueva en el árbol"],
+["pink","1/3","38/50","l","🔮","Agita la bola de nieve y pide un deseo"],
+["red","3/5","44/50","l","🧢","Póntelo: gorro de Papá Noel"],
+["yellow","5/7","38/50","r","🍪","Hornea galletas de jengibre"],
+["yellow","7/8","38/44","l","🧥","Último suéter, ¡el más bonito!"],
+["red","1/3","50/62","r","🧦","Cuelga el calcetín de la chimenea"],
+["green","3/5","50/62","r","🍰","Hora del tronco de Navidad"],
+["yellow","5/7","50/62","l","❄️","Cada copo es único, como tú"],
+["red","7/8","44/62","l","🎅","¡Feliz Navidad! 🎄 Ho, ho, ho"]
+];
+// [canción – artista, libro – autor]
+const S=[
+["All I Want for Christmas Is You – Mariah Carey","Cómo el Grinch robó la Navidad – Dr. Seuss"],
+["Last Christmas – Wham!","Cuento de Navidad – Charles Dickens"],
+["Rudolph the Red-Nosed Reindeer – Gene Autry","Rodolfo, el reno de la nariz roja – Robert L. May"],
+["Jingle Bell Rock – Bobby Helms","El principito – Antoine de Saint-Exupéry"],
+["Feliz Navidad – José Feliciano","Recuerdos de una Navidad – Truman Capote"],
+["Let It Snow – Dean Martin","El muñeco de nieve – Raymond Briggs"],
+["Sleigh Ride – The Ronettes","El león, la bruja y el armario – C. S. Lewis"],
+["Marcha (El cascanueces) – Tchaikovsky","El cascanueces y el rey de los ratones – E. T. A. Hoffmann"],
+["Candy Cane Lane – Sia","Charlie y la fábrica de chocolate – Roald Dahl"],
+["Santa Claus Is Comin' to Town – Bruce Springsteen","La noche antes de Navidad – Clement C. Moore"],
+["Skating – Vince Guaraldi Trio","Hans Brinker o los patines de plata – Mary Mapes Dodge"],
+["Christmas Time Is Here – Vince Guaraldi Trio","Hansel y Gretel – Hermanos Grimm"],
+["Mistletoe – Justin Bieber","Heidi – Johanna Spyri"],
+["Wrapped in Red – Kelly Clarkson","El regalo de los Reyes Magos – O. Henry"],
+["O Tannenbaum – Tradicional","El abeto – Hans Christian Andersen"],
+["Silver Bells – Bing Crosby","La Navidad de Poirot – Agatha Christie"],
+["Winter Wonderland – Ella Fitzgerald","La reina de las nieves – Hans Christian Andersen"],
+["It's Beginning to Look a Lot Like Christmas – Michael Bublé","Mujercitas – Louisa May Alcott"],
+["Christmas (Baby Please Come Home) – Darlene Love","Harry Potter y la piedra filosofal – J. K. Rowling"],
+["Underneath the Tree – Kelly Clarkson","Cartas de Papá Noel – J. R. R. Tolkien"],
+["Have Yourself a Merry Little Christmas – Judy Garland","Cuentos de Navidad – Charles Dickens"],
+["The Christmas Song – Nat King Cole","Chocolat – Joanne Harris"],
+["White Christmas – Bing Crosby","Nieve – Orhan Pamuk"],
+["Noche de paz – Tradicional","El expreso polar – Chris Van Allsburg"]
+];
+const yt=q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q);
+const B=(t,a,w,pd)=>t+' – '+a+' <a href="'+(pd?'https://www.gutenberg.org/ebooks/search/?query='+encodeURIComponent(pd):'https://www.google.com/search?tbm=bks&q='+encodeURIComponent(t+' '+a))+'" target="_blank" rel="noopener">'+(pd?'🔓 leer gratis':'🔎 buscar')+'</a><br><small>'+w+'</small>';
+const P=(s,ar,t,a,w,pd)=>[s+' – '+ar,B(t,a,w,pd)];
+const S2=[
+P('Silverlines','Damiano David','Damiano David. Dentro e oltre i Måneskin','Patrizia De Rossi','Reinvención artística, de Måneskin a su etapa solista'),
+P('Bugambilia','Nasa Histoires','Flora','varios autores','Naturaleza, identidad y florecimiento'),
+P('The First Time','Damiano David','Las ventajas de ser invisible','Stephen Chbosky','Primeros amores y sentirse raro en el mundo'),
+P('Cactus','Nasa Histoires','La insoportable levedad del ser','Milan Kundera','Soledad, resiliencia y melancolía'),
+P('Dancing With Your Ghost','Damiano David','Cumbres Borrascosas','Emily Brontë','Un amor destructivo y fantasmal','Wuthering Heights'),
+P('Urutaú','Nasa Histoires','Pedro Páramo','Juan Rulfo','Voces fantasmales y paisajes áridos'),
+P('Beggin\'','Måneskin','El guardián entre el centeno','J. D. Salinger','Juventud, frustración y búsqueda de autenticidad'),
+P('Años','Nasa Histoires','El amor en los tiempos del cólera','Gabriel García Márquez','El paso del tiempo y lo que queda'),
+P('Hollywood','Damiano David','El retrato de Dorian Gray','Oscar Wilde','Fama, glamour y corrupción estética','Picture of Dorian Gray'),
+P('La Gata Negra','Nasa Histoires','Rayuela','Julio Cortázar','Juego, noches y un amor laberíntico'),
+P('Biutyful','Damiano David','La historia interminable','Michael Ende','Fantasía agridulce sobre salvar un mundo'),
+P('Luciérnaga Artificial','Nasa Histoires','¿Sueñan los androides con ovejas eléctricas?','Philip K. Dick','Lo orgánico frente a lo artificial'),
+P('Wildcard','Damiano David','Conversaciones con amigos','Sally Rooney','Relaciones ambiguas y vulnerabilidad moderna'),
+P('Diente de León','Nasa Histoires','El principito','Antoine de Saint-Exupéry','Lo efímero y la importancia de lo pequeño'),
+P('Rest','Damiano David','Normal People','Sally Rooney','Intimidad, malentendidos y dolor de crecer'),
+P('Navegando en Tinta','Nasa Histoires','La sombra del viento','Carlos Ruiz Zafón','Libros, amor y memoria en una Barcelona gótica'),
+P('London Boy','Damiano David','Una habitación propia','Virginia Woolf','Independencia, libertad y exploración'),
+P('Quemar Mis Barcos','Nasa Histoires','La casa de los espíritus','Isabel Allende','Ruptura con el pasado, pasión y realismo mágico'),
+P('Collide','Damiano David','Eleanor & Park','Rainbow Rowell','Dos mundos que se atraen, con música y ternura'),
+P('Girasol','Nasa Histoires','Cartas a un joven poeta','Rainer Maria Rilke','Creación artística, soledad y paciencia','Letters to a Young Poet'),
+P('Focus','Damiano David','Perdida','Gillian Flynn','Obsesión, tensión y juego psicológico'),
+P('Florecer Contigo','Nasa Histoires','La tregua','Mario Benedetti','Amor otoñal, tierno y agridulce'),
+P('19th Hour','Damiano David','Los siete maridos de Evelyn Hugo','Taylor Jenkins Reid','Fama, identidad y secretos'),
+P('Zorro','Nasa Histoires','Bestiario','Julio Cortázar','Cuentos breves y extraños sobre obsesiones')
+];
+const G=(t,a,w,q)=>t+' – '+a+' <a href="https://standardebooks.org/ebooks?query='+encodeURIComponent(q)+'" target="_blank" rel="noopener">🔓 leer gratis</a> <a href="https://es.wikisource.org/w/index.php?search='+encodeURIComponent(t+' '+a)+'" target="_blank" rel="noopener">📜 Wikisource</a><br><small>'+w+'</small>';
+const BK=[
+G('El conde de Montecristo','Alexandre Dumas','Esperanza y reinvención total','Count of Monte Cristo'),
+G('El jardín secreto','Frances H. Burnett','Naturaleza y florecimiento','Secret Garden Burnett'),
+G('Romeo y Julieta','William Shakespeare','Primeros amores, intensos y vulnerables','Romeo and Juliet'),
+G('Robinson Crusoe','Daniel Defoe','Soledad y resiliencia','Robinson Crusoe'),
+G('Cumbres Borrascosas','Emily Brontë','Un amor destructivo y fantasmal','Wuthering Heights'),
+G('Otra vuelta de tuerca','Henry James','Voces y presencias fantasmales','Turn of the Screw'),
+G('Las aventuras de Huckleberry Finn','Mark Twain','Juventud rebelde y búsqueda de libertad','Huckleberry Finn'),
+G('Persuasión','Jane Austen','El tiempo y el amor que persiste','Persuasion Austen'),
+G('El retrato de Dorian Gray','Oscar Wilde','Fama, glamour y corrupción estética','Picture of Dorian Gray'),
+G('El gato negro y otros cuentos','Edgar Allan Poe','Noches oscuras y un toque macabro','Edgar Allan Poe'),
+G('Alicia en el país de las maravillas','Lewis Carroll','Fantasía e imaginación sin límites','Alice Adventures in Wonderland'),
+G('Frankenstein','Mary Shelley','Lo humano frente a lo artificial','Frankenstein Shelley'),
+G('Orgullo y prejuicio','Jane Austen','Relaciones ambiguas y atracción','Pride and Prejudice'),
+G('El príncipe feliz y otros cuentos','Oscar Wilde','Lo efímero, con ternura poética','Happy Prince and Other Tales'),
+G('Jane Eyre','Charlotte Brontë','Intimidad y dolor de crecer','Jane Eyre'),
+G('Don Quijote de la Mancha','Miguel de Cervantes','Libros, imaginación y locura bonita','Don Quijote'),
+G('Oliver Twist','Charles Dickens','Una Londres dura y la búsqueda de un lugar propio','Oliver Twist'),
+G('Moby Dick','Herman Melville','Obsesión y decisiones sin vuelta atrás','Moby Dick'),
+G('Norte y Sur','Elizabeth Gaskell','Dos mundos que chocan y se atraen','North and South Gaskell'),
+G('Cartas a un joven poeta','Rainer Maria Rilke','Creación artística, soledad y paciencia','Letters to a Young Poet'),
+G('El extraño caso del Dr. Jekyll y Mr. Hyde','R. L. Stevenson','Doble cara, tensión y obsesión','Jekyll and Hyde'),
+G('Rimas y leyendas','Gustavo Adolfo Bécquer','Amor tierno y agridulce, en español','Rimas Becquer'),
+G('El fantasma de la ópera','Gaston Leroux','Fama, secretos y un escenario','Phantom of the Opera'),
+G('El libro de la selva','Rudyard Kipling','Animales y aventura','Jungle Book Kipling')
+];
+const BK2=[
+G('Ana de las Tejas Verdes','L. M. Montgomery','Una chica soñadora que empieza un capítulo nuevo','Anne of Green Gables'),
+G('El jardín secreto','Frances H. Burnett','Para quien hace florecer todo a su alrededor','Secret Garden Burnett'),
+G('Romeo y Julieta','William Shakespeare','El primer amor, intenso y valiente','Romeo and Juliet'),
+G('La pequeña princesa','Frances H. Burnett','Fortaleza y ternura en tiempos difíciles','A Little Princess'),
+G('Jane Eyre','Charlotte Brontë','Un amor que atraviesa fantasmas y heridas del pasado','Jane Eyre'),
+G('Persuasión','Jane Austen','Lo que no se dice, y el amor que espera y vuelve','Persuasion Austen'),
+G('Mujercitas','Louisa May Alcott','Para la chica rebelde y de espíritu libre','Little Women Alcott'),
+G('María','Jorge Isaacs','Un romance nostálgico que el tiempo no borra','Jorge Isaacs'),
+G('Emma','Jane Austen','Una historia luminosa, divertida y llena de enredos','Emma Austen'),
+G('Papaito Piernas Largas','Jean Webster','Cartas dulces, juguetonas y románticas','Daddy-Long-Legs'),
+G('La abadía de Northanger','Jane Austen','Gótica, irónica y muy divertida: un poco de oscuridad con humor','Northanger Abbey'),
+G('Sonetos del portugués','Elizabeth Barrett Browning','Poemas de amor para dedicar','Sonnets from the Portuguese'),
+G('Orgullo y prejuicio','Jane Austen','El clásico del amor que se hace esperar','Pride and Prejudice'),
+G('El príncipe feliz y otros cuentos','Oscar Wilde','Cuentos tiernos sobre la bondad','Happy Prince and Other Tales'),
+G('Sentido y sensibilidad','Jane Austen','Dos hermanas, cariño y corazón: algo hecho para ti','Sense and Sensibility'),
+G('Cyrano de Bergerac','Edmond Rostand','Cartas de amor que lo dicen todo','Cyrano de Bergerac'),
+G('Una habitación con vistas','E. M. Forster','Calidez, viaje y elegir lo que se siente','Room with a View'),
+G('Norte y Sur','Elizabeth Gaskell','Una heroína decidida que no mira atrás','North and South Gaskell'),
+G('Heidi','Johanna Spyri','Hogar, calidez y sentirse en casa','Heidi Spyri'),
+G('Cartas a un joven poeta','Rainer Maria Rilke','Creación, paciencia y esperanza','Letters to a Young Poet'),
+G('Alicia en el país de las maravillas','Lewis Carroll','Fantasía y asombro, hasta con un jardín de rosas','Alice Adventures in Wonderland'),
+G('Rimas y leyendas','Gustavo Adolfo Bécquer','Poesía de amor en español','Rimas Becquer'),
+G('El libro de la selva','Rudyard Kipling','Animales, instinto y aventura','Jungle Book Kipling'),
+G('Sonetos','William Shakespeare','Versos para decirle a alguien que te importa','Shakespeare sonnets')
+];
+const SONGS=["Silverlines – Damiano David", "Bugambilia – Nasa Histoires", "The First Time – Damiano David", "Cactus – Nasa Histoires", "Dancing With Your Ghost – Sasha Alex Sloan", "No digas nada – LATIN MAFIA", "Beggin' – Måneskin", "Años – Nasa Histoires", "Hollywood – Damiano David", "La Gata Negra – Nasa Histoires", "Zombie Lady – Damiano David", "Luciérnaga Artificial – Nasa Histoires", "The First Time – Damiano David", "Diente de León – Nasa Histoires", "Hecho para ti – LATIN MAFIA x Omar Apollo", "Navegando en Tinta – Nasa Histoires", "Cinnamon  – Damiano David", "Quemar Mis Barcos – Nasa Histoires", "Departamento – LATIN MAFIA", "Girasol – Nasa Histoires", "FLORES – LATIN MAFIA", "Florecer Contigo – Nasa Histoires", "Zorro – Nasa Histoires", "The First Time – Damiano David"];
+const S3=SONGS.map((x,i)=>[x,BK2[i]]);
+const HORA=9; // hora de la notificación diaria
+const NOMBRE='',DE=''; // pon aquí su nombre y el tuyo
+const TEST=true; // VERSIÓN DE PRUEBA
+const locked=i=>{if(TEST)return false;const n=new Date(),y=n.getMonth()<5?n.getFullYear()-1:n.getFullYear();return n<new Date(y,11,i+1)};
+const F=['Empieza diciembre y yo empiezo por acordarme de ti.','Eres de esas personas que hacen más bonito cualquier plan.','Gracias por las risas que no se planean.','Aunque haga frío, contigo todo se siente más cálido.','Tu forma de ser merece quedarse en la memoria.','Hoy te mando un abrazo largo, de los de verdad.','Eres más valiente de lo que a veces crees.','Contigo el tiempo pasa distinto: mejor.','Brillas sin necesitar ningún escenario.','Si pudiera elegir un plan para hoy, sería uno contigo.','Ojalá este día te trate tan bien como te mereces.','Eres luz, incluso cuando no te das cuenta.','Me gusta que no seas igual que nadie.','Las cosas pequeñas contigo se vuelven grandes.','Contigo se puede hablar de todo, y eso es un regalo.','Si tu historia fuera un libro, la leería entera.','Gracias por hacer sentir a la gente como en casa.','Qué bueno que existas justo como eres.','Hay personas que cambian un año entero; tú eres una de ellas.','Ojalá siempre tengas a alguien que te lea cosas bonitas en voz alta.','Tu atención es de lo más valioso que alguien puede recibir.','Todo lo bueno florece con paciencia, y tú eres prueba de eso.','Mañana es Nochebuena y ya sé de qué estoy agradecido.','Feliz Navidad. Gracias por estar. Que cierres el año bonito y el que viene te sorprenda mejor.'];
+document.getElementById('sub').innerHTML=(NOMBRE?'Para <b>'+NOMBRE+'</b> 💌 · ':'Hecho con cariño, solo para ti 💌 · ')+'un día por sorpresa, del 1 al 24 de diciembre'+(DE?'<br>Con cariño, '+DE:'');
+function confetti(n){const c=['🎄','❄️','⭐','💖','🎁','✨'];for(let k=0;k<n;k++){const e=document.createElement('span');e.className='cf';e.textContent=c[k%c.length];e.style.left=Math.random()*100+'vw';e.style.fontSize=(14+Math.random()*14)+'px';e.style.animationDuration=(2+Math.random()*2.5)+'s';e.style.animationDelay=Math.random()*.6+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),5500)}}
+// Reproductor: por día, {yt:'ID_DE_YOUTUBE'} o {src:'audio/05.mp3'}. Sin dato: enlace de búsqueda.
+const MEDIA={1:{yt:'HwC3Haw-dKo'},2:{yt:'a1ozTSkE27U'},3:{yt:'zKEKXCLT6yg'},4:{yt:'wn7eu06bqZE'},5:{yt:'Qzc_aX8c8g4'},6:{yt:'DvyOm9HeT-k'},7:{yt:'W2MpGCL8-9o'},8:{yt:'VdxlpVqjTnI'},9:{yt:'c4uLgMq_Yl8'},10:{yt:'D7gndBfF6VA'},11:{yt:'bjg9lS8T3tI'},12:{yt:'Akj91Jxpxok'},13:{yt:'CIuyuK349Lw'},14:{yt:'q_-KjPCaMnM'},15:{yt:'LKs4eq6dwJQ'},16:{yt:'4l7N3yPa8fo'},17:{yt:'3bAb09gLUPY'},18:{yt:'G8pw2YDVNAA'},19:{yt:'TXWQRXVoOqg'},20:{yt:'nmVnHYI8gl4'},21:{yt:'1oOoOJDbhXQ'},22:{yt:'zKZ0BAyQMYo'},23:{yt:'cu0NqUS-OHU'},24:{yt:'CIuyuK349Lw'}};
+function player(i,t){const m=MEDIA[i+1];
+if(m&&m.src)return '<audio controls preload="none" src="'+m.src+'" style="width:100%"></audio>';
+if(m&&m.yt)return '<iframe width="100%" height="190" src="https://www.youtube-nocookie.com/embed/'+m.yt+'?playsinline=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen style="border:0;border-radius:12px"></iframe><small><a href="https://www.youtube.com/watch?v='+m.yt+'" target="_blank" rel="noopener">¿No carga? Ábrelo en YouTube</a></small>';
+return '<p><a href="'+yt(t)+'" target="_blank" rel="noopener">▶ escuchar</a></p>'}
+function showModal(i,x,s){const m=document.createElement('div');m.className='ov';m.innerHTML='<div class="mc"><div class="big">'+x[4]+'</div><h2>Día '+(i+1)+'</h2><p class="fr">💌 '+F[i]+'</p><p>🎵 '+s[0]+'</p>'+player(i,s[0])+'<p>📖 '+s[1]+'</p><p>🎁 Plan del día: '+x[5]+'</p>'+(i==23?'<p class="fin">Este calendario fue mi forma de decirte que me importas. ¡Feliz Navidad! 🎄'+(DE?'<br>— '+DE:'')+'</p>':'')+'<button>Cerrar</button></div>';m.onclick=e=>{if(e.target===m||e.target.tagName==='BUTTON')m.remove()};document.body.appendChild(m);confetti(i==23?70:14)}
+const hoyIdx=()=>{const n=new Date();return(!TEST&&n.getMonth()===11&&n.getDate()<=25)?n.getDate()-1:-1};
+function upd(){const n=new Date(),y=n.getMonth()<5?n.getFullYear()-1:n.getFullYear(),d=Math.ceil((new Date(y,11,1)-n)/864e5);let t='🎁 Has abierto '+open.length+' de 24';if(!TEST&&d>0)t='⏳ Faltan '+d+(d==1?' día':' días')+' para el primer regalo';document.getElementById('cnt').textContent=t}
+document.addEventListener('securitypolicyviolation',e=>{if(/youtube/.test(e.blockedURI||'')){document.querySelectorAll('.mc iframe').forEach(f=>{const m=(f.src.match(/embed\/([\w-]+)/)||[])[1];if(f.nextElementSibling)f.nextElementSibling.remove();f.outerHTML='<p><a href="https://www.youtube.com/watch?v='+m+'" target="_blank" rel="noopener">▶ Escuchar en YouTube</a></p>'})}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const o=document.querySelector('.ov');if(o)o.remove()}});
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches)for(let k=0;k<16;k++){const e=document.createElement('span');e.className='cf sn';e.textContent='❄️';e.style.left=Math.random()*100+'vw';e.style.fontSize=(10+Math.random()*10)+'px';e.style.opacity=.5;e.style.animationDuration=(9+Math.random()*8)+'s';e.style.animationDelay=(-Math.random()*12)+'s';document.body.appendChild(e)}
+(function(){const m=document.createElement('div');m.className='ov';m.innerHTML='<div class="mc"><div class="big">💌</div><h2>Tienes un regalo</h2><p>'+(NOMBRE?'Para <b>'+NOMBRE+'</b>. ':'')+'Hay un detalle para cada día de diciembre: una canción, un libro y unas palabras para ti.</p><button>Abrir mi calendario</button></div>';m.onclick=e=>{if(e.target.tagName==='BUTTON'){m.remove();confetti(30)}};document.body.appendChild(m)})();
+function plIds(){return[...new Set(Object.keys(MEDIA).sort((a,b)=>a-b).map(k=>MEDIA[k].yt).filter(Boolean))]}
+const plUrl=()=>'https://www.youtube.com/watch_videos?video_ids='+plIds().join(',');
+function plTexto(){return 'Playlist del calendario de Adviento\n\n'+SONGS.map((s,i)=>(i+1)+'. '+s+(MEDIA[i+1]&&MEDIA[i+1].yt?'\nhttps://www.youtube.com/watch?v='+MEDIA[i+1].yt:'')).join('\n\n')+'\n\nPlaylist completa: '+plUrl()}
+function copiar(b){const t=plTexto();const ok=()=>{b.textContent='✅ ¡Copiada!'};if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok).catch(()=>prompt('Copia la lista:',t));else prompt('Copia la lista:',t)}
+function showD25(){const m=document.createElement('div');m.className='ov';m.innerHTML='<div class="mc"><div class="big">🎁</div><h2>Día 25 · Feliz Navidad</h2><p class="fr">💌 Esta es tu playlist completa: todo lo que sonó en estos días, para que se quede contigo.</p><ol>'+SONGS.map(x=>'<li>'+x+'</li>').join('')+'</ol><button class="btn" id="pl1">▶ Abrir playlist en YouTube</button><button class="btn" id="pl2">📋 Copiar lista</button>'+(navigator.share?'<button class="btn" id="pl3">📤 Compartir</button>':'')+'<button class="btn" id="plc">Cerrar</button></div>';m.onclick=e=>{if(e.target===m||e.target.id==='plc')m.remove()};document.body.appendChild(m);
+document.getElementById('pl1').onclick=()=>window.open(plUrl(),'_blank');
+document.getElementById('pl2').onclick=function(){copiar(this)};
+const p3=document.getElementById('pl3');if(p3)p3.onclick=()=>navigator.share({title:'Playlist de Adviento',text:plTexto()}).catch(()=>{})}
+function d25ui(){const b=document.getElementById('d25'),lk=locked(24);b.hidden=lk;b.className='d25'+(lk?' lock':(hoyIdx()===24?' pulse':''));b.textContent=lk?'🔒 Día 25 · Sorpresa de Navidad (se abre el 25 de diciembre)':'🎁 Día 25 · ¡Tu sorpresa de Navidad!'}
+document.getElementById('d25').onclick=()=>{if(locked(24)){bar.textContent='🔒 La sorpresa final se abre el 25 de diciembre';return}showD25();confetti(90)};
+async function notis(){try{const LN=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;if(!LN)return;
+const p=await LN.requestPermissions();if(p.display!=='granted')return;
+if(TEST){await LN.schedule({notifications:[{id:999,title:'🎄 Notificación de prueba',body:'Así te avisará cada día a las '+HORA+':00 ✨',schedule:{at:new Date(Date.now()+10000),allowWhileIdle:true}}]});return}
+const n=new Date(),y=n.getMonth()<5?n.getFullYear()-1:n.getFullYear(),list=[];
+for(let d=1;d<=25;d++){const at=new Date(y,11,d,HORA,0,0);if(at>n)list.push({id:d,title:d==25?'🎄 ¡Feliz Navidad!':D[d-1][4]+' Día '+d+' de tu calendario',body:d==25?(NOMBRE?NOMBRE+', ':'')+'abre tu calendario: hoy hay algo más 💌':(NOMBRE?NOMBRE+', ':'')+'tu canción, tu libro y unas palabras de hoy te esperan 💌',schedule:{at,allowWhileIdle:true}})}
+await LN.cancel({notifications:Array.from({length:25},(_,i)=>({id:i+1}))});
+if(list.length)await LN.schedule({notifications:list})}catch(e){}}
+const cal=document.getElementById('cal'),bar=document.getElementById('bar');
+let open=[];
+try{open=JSON.parse(localStorage.getItem('adv')||'[]')}catch(e){}
+function save(){try{localStorage.setItem('adv',JSON.stringify(open))}catch(e){}}
+function render(){
+  cal.innerHTML='';
+  D.forEach((x,i)=>{
+    const b=document.createElement('button');
+    b.className='d '+x[0]+' '+x[3]+(open.includes(i)?' open':'')+(locked(i)&&!open.includes(i)?' lock':'')+(hoyIdx()===i?' hoy':'');
+    b.style.gridColumn=x[1];b.style.gridRow=x[2];
+    b.setAttribute('aria-label','Día '+(i+1));
+    b.innerHTML='<span class="n">'+(i+1)+'</span><span class="e">'+x[4]+'</span>';
+    b.onclick=()=>{
+      if(locked(i)){bar.textContent='🔒 Este día se abre el '+(i+1)+' de diciembre';return}
+      if(!open.includes(i)){open.push(i);save();b.classList.add('open')}
+      const s=S3[i];
+      bar.innerHTML='<div>'+x[4]+' <b>Día '+(i+1)+'</b> · <small>'+x[5]+'</small></div>'
+        +'<div>🎵 '+s[0]+' <a href="'+yt(s[0])+'" target="_blank" rel="noopener">▶ escuchar</a></div>'
+        +'<div>📖 '+s[1]+'</div>';
+      showModal(i,x,s);upd();
+    };
+    cal.appendChild(b);
+  });
+}
+document.getElementById('reset').onclick=()=>{open=[];save();render();upd();bar.textContent='👆 Toca un día para descubrir la sorpresa'};
+render();upd();d25ui();notis();
+</script>
+</body>
+</html>
